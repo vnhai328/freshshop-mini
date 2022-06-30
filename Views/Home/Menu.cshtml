@@ -1,0 +1,112 @@
+﻿@model List<PrjFresh.Models.tblMenu>
+@{
+    var model = (List<PrjFresh.Models.CartItem>)Session["Cart"];
+}
+<header class="main-header">
+    <!-- Start Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
+        <div class="container">
+            <!-- Start Header Navigation -->
+            <div class="navbar-header">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="@Url.Action("Index","Home")"><img src="~/assest/images/logo.png" class="logo" alt=""></a>
+            </div>
+            <!-- End Header Navigation -->
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="navbar-menu">
+                <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            if (item.Parent_ID == -1 && item.OrderNumber != 2)
+                            {
+                                <li class="nav-item"><a class="nav-link" href="@item.Url">@item.MenuName</a></li>
+                            }
+                            else if (item.Parent_ID == -1)
+                            {
+                                <li class="dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fas fa-angle-down">@item.MenuName</i></a>
+                                    <ul class="dropdown-menu">
+                                        @foreach (var item2 in Model)
+                                        {
+                                            if (item.ID == item2.Parent_ID)
+                                            {
+                                                <li><a class="nav-link" href="@item2.Url" >@item2.MenuName</a></li>
+                                            }
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        }
+                    }
+
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+            <!-- Start Atribute Navigation -->
+            <div class="attr-nav">
+                <ul>
+                    <li class="search"><a href="#"><i class="fa fa-search"></i></a></li>
+                    <li class="side-menu">
+                        <a href="#" onclick="Open_Cart()">
+                            <i class="fa fa-shopping-bag"></i>
+                            @if (model != null)
+                            {
+                                <span class="badge">@(Session["TotalProduct"] == null ? 0 : Session["TotalProduct"])</span>
+                            }
+                            <p>My Cart</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- End Atribute Navigation -->
+
+        </div>
+        <!-- Start Side Menu -->
+
+        <div class="side" id="CartView">
+            <a href="#" class="close-side" id="CloseView" onclick="Close_Cart()"><i class="fa fa-times"></i></a>
+            <li class="cart-box">
+                <ul class="cart-list">
+                    <li>
+                        @if (model != null)
+                        {
+                            foreach (var item in model)
+                            {
+                                <a href="#" class="photo"><img src="~/assest/images/@item.ImageUrl" class="cart-thumb" alt="" /></a>
+                                <h6><a href="#">@item.Name</a></h6>
+                                <h6><a href="/Home/RemoveCart?ID=@item.ID"><i class="fas fa-times"></i></a></h6>
+                                <p>@item.Quantity x - <span class="price">$ @item.Price</span></p>
+
+                            }
+                        }
+                    </li>
+
+                    <li class="total">
+                        <a href="@Url.Action("ViewCart","Cart")" class="btn btn-default hvr-hover btn-cart">VIEW CART</a>
+                        <span class="float-right"><strong>Total</strong>: $ @(Session["TotalMoney"] == null ? 0 : Session["TotalMoney"])</span>
+                    </li>
+                </ul>
+            </li>
+        </div>
+        <!-- End Side Menu -->
+    </nav>
+    <!-- End Navigation -->
+</header>
+<script type="text/javascript">
+    function Open_Cart() {
+        if (document.getElementById("CartView").className == 'side on') {
+            document.getElementById("CartView").className = 'side';
+        }
+        else {
+            document.getElementById("CartView").className = 'side on';
+        }
+    }
+    function Close_Cart() {
+        document.getElementById("CartView").className = 'side';
+    }
+</script>
